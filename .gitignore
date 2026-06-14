@@ -1,0 +1,15 @@
+# Chroma DB
+data/vector_store/
+
+# Environment
+.env
+.venv/
+
+# Python
+__pycache__/
+*.pyc
+
+# FAISS
+faiss_store/
+*.index
+*.pkl
