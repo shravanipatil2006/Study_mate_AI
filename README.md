@@ -172,44 +172,6 @@ Examples include FIFO, LRU, and Optimal Page Replacement.
 
 ---
 
-## Sample Workflow
-
-1. Load PDF documents
-2. Split documents into chunks
-3. Generate embeddings
-4. Store vectors in FAISS
-5. Retrieve relevant chunks
-6. Send retrieved context to Groq LLM
-7. Generate final answer
-
----
-
-## Future Improvements
-
-* Streamlit Web Interface
-* Chat History Support
-* Multi-PDF Upload
-* Source Citations
-* Hybrid Search
-* ChromaDB Support
-* Conversational Memory
-
----
-
-## Author
-
-**Shravani Patil**
-
-GitHub: https://github.com/shravanipatil2303
-
----
-
-## License
-
-This project is created for educational and learning purposes.
-
----
-
 ## 📸 Project Screenshots
 
 ### Query: What are IoT Communication Models?
@@ -234,3 +196,17 @@ The RAG pipeline successfully retrieves information related to memory management
 |---------|---------|
 | What are IoT Communication Models? | Device-to-Device, Device-to-Cloud, Device-to-Gateway, Back-End Data Sharing |
 | What are Replacement Algorithms? | FIFO, LRU, LFU and other cache/page replacement techniques |
+
+## Author
+
+**Shravani Patil**
+
+GitHub: https://github.com/shravanipatil2303
+
+---
+
+## License
+
+This project is created for educational and learning purposes.
+
+---
