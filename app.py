@@ -1,25 +1,36 @@
-from src.data_loader import load_all_documents
-from src.vectorstore import FaissVectorStore
+import streamlit as st
 from src.search import RAGSearch
 
-# Example usage
+st.set_page_config(
+    page_title="RAG PDF Question Answering",
+    page_icon="📚"
+)
 
-if __name__ == "__main__":
+st.title("📚 RAG PDF Question Answering System")
 
-    docs = load_all_documents("data")
+st.write(
+    "Ask questions from your PDF documents using Retrieval-Augmented Generation (RAG)."
+)
 
-    store = FaissVectorStore("faiss_store")
+query = st.text_input(
+    "Enter your question:"
+)
 
-    #store.build_from_documents(docs)
-    store.load()   
-    #print(store.query("What is Replacement Algorithms?",top_k=3))
-    rag_search = RAGSearch()
+if st.button("Get Answer"):
 
-    query = "What are IoT Communication Models?"
+    if query.strip():
 
-    summary = rag_search.search_and_summarize(
-        query,
-        top_k=3
-    )
+        with st.spinner("Searching documents..."):
 
-    print("Summary:", summary)
+            rag_search = RAGSearch()
+
+            answer = rag_search.search_and_summarize(
+                query,
+                top_k=3
+            )
+
+        st.success("Answer Generated")
+        st.write(answer)
+
+    else:
+        st.warning("Please enter a question.")

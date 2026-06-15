@@ -5,7 +5,7 @@ from src.vectorstore import FaissVectorStore
 from langchain_groq import ChatGroq
 
 load_dotenv()
-
+print("GROQ_API_KEY =", os.getenv("GROQ_API_KEY"))
 
 class RAGSearch:
 
@@ -46,10 +46,10 @@ class RAGSearch:
         else:
             self.vectorstore.load()
 
-        groq_api_key = "GROQ_API_KEY"
+        groq_api_key = os.getenv("GROQ_API_KEY")
 
         self.llm = ChatGroq(
-            groq_api_key=groq_api_key,
+            groq_api_key = os.getenv("GROQ_API_KEY"),
             model_name=llm_model
         )
 
