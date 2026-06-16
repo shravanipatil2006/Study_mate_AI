@@ -3,14 +3,31 @@ import streamlit as st
 from src.search import RAGSearch
 
 st.set_page_config(
-    page_title="RAG PDF Question Answering",
+    page_title="StudyMate AI",
     page_icon="📚"
 )
 
-st.title("📚 RAG PDF Question Answering System")
+with st.sidebar:
+
+    st.title("🎓 StudyMate AI")
+
+    st.markdown("""
+    ### Features
+
+    ✅ PDF Upload
+
+    ✅ Question Answering
+
+    ✅ Short Answer
+
+    ✅ Detailed Answer
+
+    """)
+
+st.title("📚 StudyMate AI")
 
 st.write(
-    "Ask questions from your PDF documents using Retrieval-Augmented Generation (RAG)."
+    "Your Personal Exam Preparation Assistant"
 )
 uploaded_file = st.file_uploader(
     "Upload PDF",
@@ -38,13 +55,26 @@ if uploaded_file:
         f"Uploaded: {uploaded_file.name}"
     )
 
-query = st.text_input(
-    "Enter your question:"
+answer_type = st.selectbox(
+    "Answer Type",
+    ["Short Answer", "Detailed Answer"]
+)
+   
+
+query = st.text_area(
+    "Ask a question from your notes",
+    height=120
 )
 
 if st.button("Get Answer"):
 
-    if query.strip():
+    if not uploaded_file:
+        st.warning("Please upload a PDF first.")
+
+    elif not query.strip():
+        st.warning("Please enter a question.")
+
+    else:
 
         with st.spinner("Searching documents..."):
 
@@ -53,12 +83,15 @@ if st.button("Get Answer"):
             )
 
             answer = rag_search.search_and_summarize(
-                query,
-                top_k=3
+            query=query,
+            answer_type=answer_type,
+            top_k=7
             )
 
         st.success("Answer Generated")
         st.write(answer)
+st.divider()
 
-    else:
-        st.warning("Please enter a question.")
+st.caption(
+    "StudyMate AI • Built using LangChain, FAISS, Groq and Streamlit"
+)        

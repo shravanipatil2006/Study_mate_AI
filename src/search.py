@@ -3,10 +3,13 @@ from dotenv import load_dotenv
 
 from src.vectorstore import FaissVectorStore
 from langchain_groq import ChatGroq
+from langchain_community.document_loaders import PyPDFLoader
 
 load_dotenv()
 
+
 class RAGSearch:
+
     def __init__(
         self,
         pdf_path=None,
@@ -20,59 +23,31 @@ class RAGSearch:
             embedding_model
         )
 
-        # Load or build vectorstore
-        faiss_path = os.path.join(
-            persist_dir,
-            "faiss.index"
-        )
+        if pdf_path:
 
-        meta_path = os.path.join(
-            persist_dir,
-            "metadata.pkl"
-        )
+            docs = PyPDFLoader(
+                pdf_path
+            ).load()
 
-        from langchain_community.document_loaders import PyPDFLoader
+            self.vectorstore.build_from_documents(
+                docs
+            )
 
-if pdf_path:
+        else:
 
-    loader = PyPDFLoader(pdf_path)
-
-    docs = loader.load()
-
-    self.vectorstore.build_from_documents(docs)
-
-else:
-
-    if not (
-        os.path.exists(faiss_path)
-        and os.path.exists(meta_path)
-    ):
-
-        from src.data_loader import load_all_documents
-
-        docs = load_all_documents("data")
-
-        self.vectorstore.build_from_documents(docs)
-
-    else:
-
-        self.vectorstore.load()
-
-        groq_api_key = os.getenv("GROQ_API_KEY")
+            self.vectorstore.load()
 
         self.llm = ChatGroq(
-            groq_api_key = os.getenv("GROQ_API_KEY"),
+            groq_api_key=os.getenv(
+                "GROQ_API_KEY"
+            ),
             model_name=llm_model
-        )
-
-        print(
-            f"[INFO] Groq LLM initialized: "
-            f"{llm_model}"
         )
 
     def search_and_summarize(
         self,
         query: str,
+        answer_type="Short Answer",
         top_k: int = 5
     ) -> str:
 
@@ -92,8 +67,38 @@ else:
         if not context:
             return "No relevant documents found."
 
+        if answer_type == "Short Answer":
+
+            instruction = """
+            Answer in 4-5 sentences only.
+            Keep it concise and direct.
+            """
+
+        else:
+
+            instruction = """
+    Provide a detailed answer using ONLY the information
+    available in the context.
+
+    Do not introduce new concepts.
+
+    Structure the answer as:
+    - Introduction
+    - Main Points
+    - Conclusion
+
+    If information is missing, explicitly state that the
+    uploaded PDF does not contain further details.
+    """
+
         prompt = f"""
-Summarize the following context for the query: '{query}'
+Answer the question using only the provided context.
+
+Question:
+{query}
+
+Instruction:
+{instruction}
 
 Context:
 {context}
