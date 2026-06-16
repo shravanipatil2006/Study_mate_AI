@@ -7,12 +7,12 @@ from langchain_groq import ChatGroq
 load_dotenv()
 
 class RAGSearch:
-
     def __init__(
         self,
-        persist_dir: str = "faiss_store",
-        embedding_model: str = "all-MiniLM-L6-v2",
-        llm_model: str = "llama-3.3-70b-versatile"
+        pdf_path=None,
+        persist_dir="faiss_store",
+        embedding_model="all-MiniLM-L6-v2",
+        llm_model="llama-3.3-70b-versatile"
     ):
 
         self.vectorstore = FaissVectorStore(
@@ -31,19 +31,32 @@ class RAGSearch:
             "metadata.pkl"
         )
 
-        if not (
-            os.path.exists(faiss_path)
-            and os.path.exists(meta_path)
-        ):
+        from langchain_community.document_loaders import PyPDFLoader
 
-            from src.data_loader import load_all_documents
+if pdf_path:
 
-            docs = load_all_documents("data")
+    loader = PyPDFLoader(pdf_path)
 
-            self.vectorstore.build_from_documents(docs)
+    docs = loader.load()
 
-        else:
-            self.vectorstore.load()
+    self.vectorstore.build_from_documents(docs)
+
+else:
+
+    if not (
+        os.path.exists(faiss_path)
+        and os.path.exists(meta_path)
+    ):
+
+        from src.data_loader import load_all_documents
+
+        docs = load_all_documents("data")
+
+        self.vectorstore.build_from_documents(docs)
+
+    else:
+
+        self.vectorstore.load()
 
         groq_api_key = os.getenv("GROQ_API_KEY")
 
